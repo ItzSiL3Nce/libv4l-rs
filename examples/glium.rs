@@ -29,17 +29,17 @@ fn main() -> io::Result<()> {
     let dev = RwLock::new(Device::with_path(path)?);
     {
         let dev = dev.write().unwrap();
-        format = dev.format()?;
-        params = dev.params()?;
+        format = dev.format(false)?;
+        params = dev.params(false)?;
 
         // try RGB3 first
         format.fourcc = FourCC::new(b"RGB3");
-        format = dev.set_format(&format)?;
+        format = dev.set_format(&format, false)?;
 
         if format.fourcc != FourCC::new(b"RGB3") {
             // fallback to Motion-JPEG
             format.fourcc = FourCC::new(b"MJPG");
-            format = dev.set_format(&format)?;
+            format = dev.set_format(&format, false)?;
 
             if format.fourcc != FourCC::new(b"MJPG") {
                 return Err(io::Error::new(

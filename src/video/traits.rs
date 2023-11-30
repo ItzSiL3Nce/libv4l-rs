@@ -25,10 +25,10 @@ pub trait Capture {
     ///
     /// The "emulated" field describes formats filled in by libv4lconvert.
     /// There may be a conversion related performance penalty when using them.
-    fn enum_formats(&self) -> io::Result<Vec<FormatDescription>>;
+    fn enum_formats(&self, mplane: bool) -> io::Result<Vec<FormatDescription>>;
 
     /// Returns the format currently in use
-    fn format(&self) -> io::Result<Format>;
+    fn format(&self, mplane: bool) -> io::Result<Format>;
 
     /// Modifies the capture format and returns the actual format
     ///
@@ -40,17 +40,18 @@ pub trait Capture {
     /// # Arguments
     ///
     /// * `fmt` - Desired format
-    fn set_format(&self, fmt: &Format) -> io::Result<Format>;
+    fn set_format(&self, fmt: &Format, mplane: bool) -> io::Result<Format>;
 
     /// Returns the parameters currently in use
-    fn params(&self) -> io::Result<CaptureParameters>;
+    fn params(&self, mplane: bool) -> io::Result<CaptureParameters>;
 
     /// Modifies the capture parameters and returns the actual parameters
     ///
     /// # Arguments
     ///
     /// * `params` - Desired parameters
-    fn set_params(&self, params: &CaptureParameters) -> io::Result<CaptureParameters>;
+    fn set_params(&self, params: &CaptureParameters, mplane: bool)
+        -> io::Result<CaptureParameters>;
 }
 
 /// Output device protocol
@@ -71,10 +72,10 @@ pub trait Output {
     ///
     /// The "emulated" field describes formats filled in by libv4lconvert.
     /// There may be a conversion related performance penalty when using them.
-    fn enum_formats(&self) -> io::Result<Vec<FormatDescription>>;
+    fn enum_formats(&self, mplane: bool) -> io::Result<Vec<FormatDescription>>;
 
     /// Returns the format currently in use
-    fn format(&self) -> io::Result<Format>;
+    fn format(&self, mplane: bool) -> io::Result<Format>;
 
     /// Modifies the capture format and returns the actual format
     ///
@@ -85,15 +86,15 @@ pub trait Output {
     /// # Arguments
     ///
     /// * `fmt` - Desired format
-    fn set_format(&self, fmt: &Format) -> io::Result<Format>;
+    fn set_format(&self, fmt: &Format, mplane: bool) -> io::Result<Format>;
 
     /// Returns the parameters currently in use
-    fn params(&self) -> io::Result<OutputParameters>;
+    fn params(&self, mplane: bool) -> io::Result<OutputParameters>;
 
     /// Modifies the output parameters and returns the actual parameters
     ///
     /// # Arguments
     ///
     /// * `params` - Desired parameters
-    fn set_params(&self, params: &OutputParameters) -> io::Result<OutputParameters>;
+    fn set_params(&self, params: &OutputParameters, mplane: bool) -> io::Result<OutputParameters>;
 }

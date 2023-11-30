@@ -22,20 +22,20 @@ fn main() -> io::Result<()> {
 
     let cap = Device::with_path(source)?;
     println!("Active cap capabilities:\n{}", cap.query_caps()?);
-    println!("Active cap format:\n{}", Capture::format(&cap)?);
-    println!("Active cap parameters:\n{}", Capture::params(&cap)?);
+    println!("Active cap format:\n{}", Capture::format(&cap, false)?);
+    println!("Active cap parameters:\n{}", Capture::params(&cap, false)?);
 
     let out = Device::with_path(sink)?;
     println!("Active out capabilities:\n{}", out.query_caps()?);
-    println!("Active out format:\n{}", Output::format(&out)?);
-    println!("Active out parameters:\n{}", Output::params(&out)?);
+    println!("Active out format:\n{}", Output::format(&out, false)?);
+    println!("Active out parameters:\n{}", Output::params(&out, false)?);
 
     // BEWARE OF DRAGONS
     // Buggy drivers (such as v4l2loopback) only set the v4l2 buffer size (length field) once
     // a format is set, even though a valid format appears to be available when doing VIDIOC_G_FMT!
     // In our case, we just (try to) enforce the source format on the sink device.
-    let source_fmt = Capture::format(&cap)?;
-    let sink_fmt = Output::set_format(&out, &source_fmt)?;
+    let source_fmt = Capture::format(&cap, false)?;
+    let sink_fmt = Output::set_format(&out, &source_fmt, false)?;
     if source_fmt.width != sink_fmt.width
         || source_fmt.height != sink_fmt.height
         || source_fmt.fourcc != sink_fmt.fourcc
@@ -45,7 +45,7 @@ fn main() -> io::Result<()> {
             "failed to enforce source format on sink device",
         ));
     }
-    println!("New out format:\n{}", Output::format(&out)?);
+    println!("New out format:\n{}", Output::format(&out, false)?);
 
     // Setup a buffer stream and grab a frame, then print its data
     let mut cap_stream = MmapStream::with_buffers(&cap, Type::VideoCapture, buffer_count)?;

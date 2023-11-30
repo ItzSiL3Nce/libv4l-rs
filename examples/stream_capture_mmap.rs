@@ -17,8 +17,8 @@ fn main() -> io::Result<()> {
     let buffer_count = 4;
 
     let dev = Device::with_path(path)?;
-    let format = dev.format()?;
-    let params = dev.params()?;
+    let format = dev.format(false)?;
+    let params = dev.params(false)?;
     println!("Active format:\n{}", format);
     println!("Active parameters:\n{}", params);
 

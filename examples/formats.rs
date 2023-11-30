@@ -9,14 +9,14 @@ fn main() -> io::Result<()> {
 
     let dev = Device::with_path(path)?;
 
-    let format = dev.format()?;
+    let format = dev.format(false)?;
     println!("Active format:\n{}", format);
 
-    let params = dev.params()?;
+    let params = dev.params(false)?;
     println!("Active parameters:\n{}", params);
 
     println!("Available formats:");
-    for format in dev.enum_formats()? {
+    for format in dev.enum_formats(false)? {
         println!("  {} ({})", format.fourcc, format.description);
 
         for framesize in dev.enum_framesizes(format.fourcc)? {
