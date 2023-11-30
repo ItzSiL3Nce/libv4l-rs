@@ -136,6 +136,25 @@ impl From<v4l2_pix_format> for Format {
     }
 }
 
+impl From<v4l2_pix_format_mplane> for Format {
+    fn from(fmt: v4l2_pix_format_mplane) -> Self {
+        Self {
+            width: fmt.width,
+            height: fmt.height,
+            fourcc: FourCC::from(fmt.pixelformat),
+            field_order: FieldOrder::try_from(fmt.field).expect("Invalid field order"),
+            stride: fmt.plane_fmt[0].bytesperline,
+            size: fmt.plane_fmt[0].sizeimage,
+            flags: Flags::from(fmt.flags as u32),
+            colorspace: Colorspace::try_from(fmt.colorspace).expect("Invalid colorspace"),
+            quantization: Quantization::try_from(fmt.quantization as u32)
+                .expect("Invalid quantization"),
+            transfer: TransferFunction::try_from(fmt.xfer_func as u32)
+                .expect("Invalid transfer function"),
+        }
+    }
+}
+
 impl From<Format> for v4l2_pix_format {
     fn from(format: Format) -> Self {
         Self {
@@ -149,6 +168,30 @@ impl From<Format> for v4l2_pix_format {
             flags: format.flags.into(),
             quantization: format.quantization as u32,
             xfer_func: format.transfer as u32,
+            ..unsafe { mem::zeroed() }
+        }
+    }
+}
+
+impl From<Format> for v4l2_pix_format_mplane {
+    fn from(format: Format) -> Self {
+        let mut plane_fmt: [v4l2_plane_pix_format; 8] = unsafe { mem::zeroed() };
+        plane_fmt[0].bytesperline = format.stride;
+        plane_fmt[0].sizeimage = format.size;
+
+        let flags: u32 = format.flags.into();
+
+        Self {
+            width: format.width,
+            height: format.height,
+            pixelformat: format.fourcc.into(),
+            field: format.field_order as u32,
+            plane_fmt,
+            num_planes: 1,
+            colorspace: format.colorspace as u32,
+            flags: flags as u8,
+            quantization: format.quantization as u8,
+            xfer_func: format.transfer as u8,
             ..unsafe { mem::zeroed() }
         }
     }

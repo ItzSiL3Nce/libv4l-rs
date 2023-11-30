@@ -86,7 +86,11 @@ impl Output for Device {
                 &mut v4l2_fmt as *mut _ as *mut std::os::raw::c_void,
             )?;
 
-            Ok(Format::from(v4l2_fmt.fmt.pix))
+            if mplane {
+                Ok(Format::from(v4l2_fmt.fmt.pix_mp))
+            } else {
+                Ok(Format::from(v4l2_fmt.fmt.pix))
+            }
         }
     }
 
